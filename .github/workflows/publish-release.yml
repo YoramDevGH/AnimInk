@@ -1,0 +1,44 @@
+name: Publish tagged release
+
+on:
+  push:
+    tags:
+      - "v*"
+
+permissions:
+  contents: write
+
+jobs:
+  release:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Check out source
+        uses: actions/checkout@v4
+
+      - name: Find matching APK and create checksum
+        id: package
+        shell: bash
+        run: |
+          version="${GITHUB_REF_NAME#v}"
+          apk="releases/AnimInk-${version}.apk"
+          if [[ ! -f "$apk" ]]; then
+            echo "Missing $apk. Commit the APK before pushing tag $GITHUB_REF_NAME." >&2
+            exit 1
+          fi
+          sha256sum "$apk" > "${apk}.sha256"
+          echo "apk=$apk" >> "$GITHUB_OUTPUT"
+          echo "checksum=${apk}.sha256" >> "$GITHUB_OUTPUT"
+
+      - name: Create GitHub Release
+        env:
+          GH_TOKEN: ${{ github.token }}
+          APK: ${{ steps.package.outputs.apk }}
+          CHECKSUM: ${{ steps.package.outputs.checksum }}
+        run: >-
+          gh release create "$GITHUB_REF_NAME"
+          "$APK"
+          "$CHECKSUM"
+          --verify-tag
+          --generate-notes
+          --title "AnimInk ${GITHUB_REF_NAME#v}"

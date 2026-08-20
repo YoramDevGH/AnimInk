@@ -1,0 +1,39 @@
+# Gradle and Android build output
+.gradle/
+**/build/
+captures/
+.externalNativeBuild/
+.cxx/
+
+# Local Android SDK and signing configuration
+local.properties
+keystore.properties
+*.jks
+*.keystore
+
+# IDE metadata
+.idea/
+*.iml
+*.ipr
+*.iws
+out/
+
+# Generated packages (published APKs are explicitly kept below)
+*.apk
+*.aab
+!/releases/
+!/releases/*.apk
+
+# Logs, temporary files, and operating-system metadata
+*.log
+*.tmp
+*.swp
+.DS_Store
+Thumbs.db
+desktop.ini
+hs_err_pid*
+replay_pid*
+
+# Local agent/runtime data
+.codex-artifacts/
+.gradle-root-cache/
