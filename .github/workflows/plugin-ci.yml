@@ -1,0 +1,57 @@
+name: Supernote Plugin CI
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+    branches: [main]
+
+permissions:
+  contents: read
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Check out source
+        uses: actions/checkout@v7
+
+      - name: Set up Node.js
+        uses: actions/setup-node@v6
+        with:
+          node-version: "22"
+          cache: npm
+          cache-dependency-path: plugin/package-lock.json
+
+      - name: Set up JDK 21
+        uses: actions/setup-java@v5
+        with:
+          distribution: temurin
+          java-version: "21"
+
+      - name: Set up Gradle
+        uses: gradle/actions/setup-gradle@v6
+
+      - name: Install plugin dependencies
+        working-directory: plugin
+        run: npm ci
+
+      - name: Type-check and lint plugin
+        working-directory: plugin
+        run: |
+          npm run typecheck
+          npm run lint
+
+      - name: Build Supernote plugin
+        working-directory: plugin
+        run: |
+          chmod +x buildPlugin.sh android/gradlew
+          ./buildPlugin.sh
+
+      - name: Upload Supernote plugin
+        uses: actions/upload-artifact@v7
+        with:
+          name: AnimInk-Supernote-plugin-${{ github.sha }}
+          path: plugin/build/outputs/animink_plugin.snplg
+          if-no-files-found: error

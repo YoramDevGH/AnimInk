@@ -8,16 +8,18 @@ This file is for AnimInk maintainers.
 2. Run `./gradlew :app:lintDebug :app:assembleDebug`.
 3. Verify the APK on a real Supernote Nomad.
 4. Copy `app/build/outputs/apk/debug/app-debug.apk` to `releases/AnimInk-<version>.apk`.
-5. Update the version and download link in `README.md`.
-6. Verify the signing certificate with `apksigner verify --print-certs releases/AnimInk-<version>.apk` and keep the same signing key across updates.
-7. Commit the source and APK, then create and push a matching tag:
+5. Build the Supernote edition with `plugin/buildPlugin.ps1` or `plugin/buildPlugin.sh`.
+6. Copy `plugin/build/outputs/animink_plugin.snplg` to `releases/AnimInk-<version>.snplg`.
+7. Update both version fields and download links in `README.md` and `plugin/PluginConfig.json`.
+8. Verify the APK signing certificate with `apksigner verify --print-certs releases/AnimInk-<version>.apk` and keep the same signing key across updates.
+9. Commit the source and both packages, then create and push a matching tag:
 
    ```bash
    git tag v<version>
    git push origin main v<version>
    ```
 
-The `publish-release.yml` workflow checks that the matching APK exists, creates its SHA-256 checksum, and publishes both files as a GitHub Release.
+The `publish-release.yml` workflow checks that both matching editions exist, creates their SHA-256 checksums, and publishes the four files as a GitHub Release.
 
 ## Production signing
 

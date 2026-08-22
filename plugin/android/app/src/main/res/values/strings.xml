@@ -1,0 +1,4 @@
+<resources>
+    <string name="app_name">AnimInk Plugin</string>
+    <string name="frame_swipe_hint">2 fingers: tap to undo · swipe to change frame    3 fingers: redo</string>
+</resources>

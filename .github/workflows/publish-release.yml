@@ -16,29 +16,37 @@ jobs:
       - name: Check out source
         uses: actions/checkout@v7
 
-      - name: Find matching APK and create checksum
+      - name: Find both editions and create checksums
         id: package
         shell: bash
         run: |
           version="${GITHUB_REF_NAME#v}"
           apk="releases/AnimInk-${version}.apk"
-          if [[ ! -f "$apk" ]]; then
-            echo "Missing $apk. Commit the APK before pushing tag $GITHUB_REF_NAME." >&2
+          plugin="releases/AnimInk-${version}.snplg"
+          if [[ ! -f "$apk" || ! -f "$plugin" ]]; then
+            echo "Missing $apk or $plugin. Commit both editions before pushing tag $GITHUB_REF_NAME." >&2
             exit 1
           fi
           sha256sum "$apk" > "${apk}.sha256"
+          sha256sum "$plugin" > "${plugin}.sha256"
           echo "apk=$apk" >> "$GITHUB_OUTPUT"
-          echo "checksum=${apk}.sha256" >> "$GITHUB_OUTPUT"
+          echo "apk_checksum=${apk}.sha256" >> "$GITHUB_OUTPUT"
+          echo "plugin=$plugin" >> "$GITHUB_OUTPUT"
+          echo "plugin_checksum=${plugin}.sha256" >> "$GITHUB_OUTPUT"
 
       - name: Create GitHub Release
         env:
           GH_TOKEN: ${{ github.token }}
           APK: ${{ steps.package.outputs.apk }}
-          CHECKSUM: ${{ steps.package.outputs.checksum }}
+          APK_CHECKSUM: ${{ steps.package.outputs.apk_checksum }}
+          PLUGIN: ${{ steps.package.outputs.plugin }}
+          PLUGIN_CHECKSUM: ${{ steps.package.outputs.plugin_checksum }}
         run: >-
           gh release create "$GITHUB_REF_NAME"
           "$APK"
-          "$CHECKSUM"
+          "$APK_CHECKSUM"
+          "$PLUGIN"
+          "$PLUGIN_CHECKSUM"
           --verify-tag
           --generate-notes
           --title "AnimInk ${GITHUB_REF_NAME#v}"

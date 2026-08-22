@@ -18,11 +18,13 @@ keystore.properties
 *.iws
 out/
 
-# Generated packages (published APKs are explicitly kept below)
+# Generated packages (published packages are explicitly kept below)
 *.apk
 *.aab
+*.snplg
 !/releases/
 !/releases/*.apk
+!/releases/*.snplg
 
 # Logs, temporary files, and operating-system metadata
 *.log

@@ -1,0 +1,10 @@
+{
+  "name": "AnimInk",
+  "desc": "Create offline frame-by-frame animations with pressure-sensitive ink, two layers, and local .aink projects.",
+  "iconPath": "assets/icon.png",
+  "versionName": "0.5.3",
+  "versionCode": "1",
+  "pluginID": "a1n9m4i6n8k2p5lg",
+  "pluginKey": "animink_plugin",
+  "jsMainPath": "index"
+}

@@ -7,7 +7,7 @@ Thank you for helping improve AnimInk.
 - Search existing issues before opening a new one.
 - Keep pull requests focused on one change.
 - Do not include private `.aink` projects, device identifiers, signing keys, `local.properties`, or generated `build/` files.
-- Do not replace APKs in `releases/`; those are maintained as part of the release process.
+- Do not replace APK or SNPLG files in `releases/`; those are maintained as part of the release process.
 
 ## Development workflow
 
@@ -18,6 +18,16 @@ Thank you for helping improve AnimInk.
 
    ```bash
    ./gradlew :app:lintDebug :app:assembleDebug
+   ```
+
+   For plugin changes, also run:
+
+   ```bash
+   cd plugin
+   npm ci
+   npm run typecheck
+   npm run lint
+   ./buildPlugin.sh
    ```
 
 5. Test on a Supernote Nomad when the change affects pen input, refresh behavior, gestures, file access, or playback.

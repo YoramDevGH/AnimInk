@@ -1,18 +1,32 @@
 # AnimInk
 
-AnimInk is a lightweight frame-by-frame drawing and animation app designed for the monochrome e-ink display of the **Supernote Nomad**. It runs fully offline, uses a landscape interface, and stores projects in the portable `.aink` format.
+AnimInk is a lightweight frame-by-frame drawing and animation tool designed for monochrome Supernote e-ink displays. It runs fully offline, uses a landscape interface, and stores projects in the portable `.aink` format.
 
 ## Download
 
-**[Download AnimInk 0.5.3 for Android](releases/AnimInk-0.5.3.apk?raw=1)**
+Choose either edition. They coexist in this repository and use the same `.aink` project format.
 
-SHA-256: [`d4d62f4238c2993ef2fa3b0156f9acf891bf670aecfe53e14e3b4edc98e2a9f3`](releases/AnimInk-0.5.3.apk.sha256)
+| Edition | Download | Installation |
+| --- | --- | --- |
+| Supernote Plugin | **[AnimInk 0.5.3 `.snplg`](releases/AnimInk-0.5.3.snplg?raw=1)** | Install from Supernote's Plugins settings |
+| Android App | **[AnimInk 0.5.3 `.apk`](releases/AnimInk-0.5.3.apk?raw=1)** | Sideload as a standalone Android application |
 
-The current APK is a preview build signed with the developer's Android debug key. Android 8.0 (API 26) or newer is required. It is intended primarily for Supernote Nomad; other Android or e-ink devices are not yet officially supported.
+Plugin SHA-256: [`720aabba0f46fb39d21712c93bb23896ad2a25fce90c38abe9eccc7377c69bcf`](releases/AnimInk-0.5.3.snplg.sha256)
+
+APK SHA-256: [`d4d62f4238c2993ef2fa3b0156f9acf891bf670aecfe53e14e3b4edc98e2a9f3`](releases/AnimInk-0.5.3.apk.sha256)
+
+The plugin is the recommended edition on firmware that provides **Settings → Apps → Plugins**. The APK remains available for devices or firmware without plugin support. The APK is a preview build signed with the developer's Android debug key and requires Android 8.0 (API 26) or newer.
 
 You can also find tagged versions on the [GitHub Releases page](../../releases).
 
-### Install with ADB
+### Install the Supernote Plugin
+
+1. Copy `AnimInk-0.5.3.snplg` to the device's `MyStyle` directory.
+2. Open **Settings → Apps → Plugins**.
+3. Select **Add Plugin**, choose the package, and install it.
+4. Open NOTE or DOC and select **AnimInk** from the plugin toolbar.
+
+### Install the Android App with ADB
 
 1. Enable Android debugging on the device and connect it by USB.
 2. Download the APK, then run:
@@ -39,7 +53,7 @@ AnimInk uses Supernote's native pen path when available for low-latency strokes 
 
 ## Build from source
 
-### Requirements
+### Android App requirements
 
 - JDK 17
 - Android SDK Platform 35
@@ -61,14 +75,31 @@ To run the same checks as GitHub Actions:
 ./gradlew :app:lintDebug :app:assembleDebug
 ```
 
+### Supernote Plugin requirements
+
+- Node.js 18 or newer
+- JDK 19 or newer, as recommended by the Supernote SDK documentation
+- Android SDK Platform 35 and Build-Tools 35.0.0
+
+```bash
+cd plugin
+npm ci
+npm run typecheck
+npm run lint
+./buildPlugin.sh
+```
+
+On Windows PowerShell, run `./buildPlugin.ps1`. The package is generated at `plugin/build/outputs/animink_plugin.snplg`.
+
 ## Project structure
 
 | Path | Purpose |
 | --- | --- |
 | `app/src/main/java/com/illou/animink/` | Android application, canvas, project model, storage, and Supernote pen integration |
 | `app/src/main/res/` | App resources, theme, launcher, and tool icons |
+| `plugin/` | Supernote React Native plugin, native Android view bridge, and packaging scripts |
 | `docs/` | Technical and e-ink performance research |
-| `releases/` | Installable preview APKs published by the maintainer |
+| `releases/` | Installable `.apk` and `.snplg` packages published by the maintainer |
 | `.github/workflows/` | Continuous integration and tagged GitHub Release automation |
 
 ## Fork and contribute
