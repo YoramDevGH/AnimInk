@@ -132,8 +132,13 @@ final class SupernotePenEngine {
 
     void loadBitmap(Bitmap bitmap) {
         try {
+            // A silent clear only repaints the host View. On Chauvet 3.24 the
+            // PW backing bitmap can then retain pixels from the previous frame;
+            // its first dirty update exposes those pixels around the new stroke.
+            // Clear and present the whole native surface before installing the
+            // next frame so both the visible e-ink page and PW's cache agree.
             invoke("clearContent", new Class<?>[]{Rect.class, boolean.class, boolean.class},
-                    null, false, true);
+                    null, true, true);
             invoke("setPWBitmap", new Class<?>[]{Bitmap.class, Rect.class, Rect.class, boolean.class},
                     bitmap, null, null, true);
             invoke("invalidateHost", new Class<?>[]{Rect.class}, (Object) null);
