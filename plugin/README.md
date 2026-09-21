@@ -15,7 +15,7 @@ All user-facing plugin text is in English:
 
 ## Install
 
-1. Download `AnimInk-0.5.3.snplg` from the repository's `releases/` directory or GitHub Releases.
+1. For Chauvet 3.29.45_beta on Manta/Nomad, download the separate `AnimInk-0.5.4-Chauvet-3.29.45-beta.1.snplg` preview from the repository's `releases/` directory or GitHub Releases. For older plugin-preview firmware, use AnimInk 0.5.3.
 2. Copy it to the `MyStyle` directory on the Supernote device.
 3. Open **Settings → Apps → Plugins → Add Plugin**.
 4. Select the package and install it.
@@ -30,6 +30,7 @@ Requirements:
 - Node.js 18 or newer;
 - JDK 19 or newer, following the official Supernote environment guide;
 - Android SDK Platform 35 and Build-Tools 35.0.0.
+- `sn-plugin-lib` 0.1.65, installed from the lockfile.
 
 Install dependencies and run the checks:
 
@@ -69,6 +70,8 @@ The package is written to `build/outputs/animink_plugin.snplg`.
 The plugin has no Internet permission and performs no network requests. Projects are opened and saved through Android's document picker. A namespaced private recovery file is maintained inside the plugin host so it cannot collide with other plugins.
 
 ## Compatibility
+
+The separate AnimInk 0.5.4 Chauvet preview targets the permission-aware plugin runtime in Chauvet 3.29.43 or later on Manta/Nomad, including 3.29.45_beta. AnimInk 0.5.3 remains the regular build for older plugin-preview firmware. The preview requests no Chauvet file or Internet permissions: the Android system document picker grants access only to projects explicitly chosen by the user.
 
 The plugin is optimized for landscape Supernote e-ink devices. Runtime verification on a physical device is still required because PluginHost and native pen behavior cannot be fully reproduced by a desktop Android build.
 

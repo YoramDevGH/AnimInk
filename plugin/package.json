@@ -1,6 +1,6 @@
 {
   "name": "animink_plugin",
-  "version": "0.5.3",
+  "version": "0.5.4-chauvet.3.29.45.1",
   "description": "Offline frame-by-frame animation plugin for Supernote e-ink devices.",
   "private": true,
   "scripts": {
@@ -15,7 +15,7 @@
   "dependencies": {
     "react": "19.0.0",
     "react-native": "0.79.2",
-    "sn-plugin-lib": "^0.1.19"
+    "sn-plugin-lib": "^0.1.65"
   },
   "devDependencies": {
     "@babel/core": "^7.25.2",

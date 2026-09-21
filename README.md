@@ -17,11 +17,19 @@ APK SHA-256: [`d4d62f4238c2993ef2fa3b0156f9acf891bf670aecfe53e14e3b4edc98e2a9f3`
 
 The plugin is the recommended edition on firmware that provides **Settings → Apps → Plugins**. The APK remains available for devices or firmware without plugin support. The APK is a preview build signed with the developer's Android debug key and requires Android 8.0 (API 26) or newer.
 
+### Separate Chauvet 3.29.45 beta build
+
+For Manta and Nomad running **Chauvet 3.29.45_beta**, use the separate **[AnimInk 0.5.4 Chauvet preview `.snplg`](releases/AnimInk-0.5.4-Chauvet-3.29.45-beta.1.snplg?raw=1)**. It is rebuilt with `sn-plugin-lib` 0.1.65 for the permission-aware plugin runtime introduced in Chauvet 3.29.43. This preview does not replace the regular 0.5.3 packages.
+
+Preview SHA-256: [`e1c46e42768fc3197d9c121da48adb0705e3bfe1b9e96f4b8db3b20c41b2268a`](releases/AnimInk-0.5.4-Chauvet-3.29.45-beta.1.snplg.sha256)
+
+The preview declares no Chauvet file or Internet permissions. Project import and export use Android's system document picker, which grants access only to the file selected by the user; session recovery remains in the plugin's private storage. The package has passed desktop build and static checks but has not been run on physical 3.29.45 hardware yet.
+
 You can also find tagged versions on the [GitHub Releases page](../../releases).
 
 ### Install the Supernote Plugin
 
-1. Copy `AnimInk-0.5.3.snplg` to the device's `MyStyle` directory.
+1. Copy the `.snplg` matching your Chauvet version to the device's `MyStyle` directory.
 2. Open **Settings → Apps → Plugins**.
 3. Select **Add Plugin**, choose the package, and install it.
 4. Open NOTE or DOC and select **AnimInk** from the plugin toolbar.
@@ -80,6 +88,7 @@ To run the same checks as GitHub Actions:
 - Node.js 18 or newer
 - JDK 19 or newer, as recommended by the Supernote SDK documentation
 - Android SDK Platform 35 and Build-Tools 35.0.0
+- `sn-plugin-lib` 0.1.65 (locked by `package-lock.json`)
 
 ```bash
 cd plugin
