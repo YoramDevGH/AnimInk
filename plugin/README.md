@@ -15,7 +15,7 @@ All user-facing plugin text is in English:
 
 ## Install
 
-1. For Chauvet 3.29.45_beta on Manta/Nomad, download the separate `AnimInk-0.5.4-Chauvet-3.29.45-beta.1.snplg` preview from the repository's `releases/` directory or GitHub Releases. For older plugin-preview firmware, use AnimInk 0.5.3.
+1. For Chauvet 3.29.45_beta on Manta/Nomad, download the separate `AnimInk-0.5.4-Chauvet-3.29.45-beta.2.snplg` preview from the repository's `releases/` directory or GitHub Releases. For older plugin-preview firmware, use AnimInk 0.5.3.
 2. Copy it to the `MyStyle` directory on the Supernote device.
 3. Open **Settings → Apps → Plugins → Add Plugin**.
 4. Select the package and install it.

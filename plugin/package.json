@@ -1,6 +1,6 @@
 {
   "name": "animink_plugin",
-  "version": "0.5.4-chauvet.3.29.45.1",
+  "version": "0.5.4-chauvet.3.29.45.2",
   "description": "Offline frame-by-frame animation plugin for Supernote e-ink devices.",
   "private": true,
   "scripts": {

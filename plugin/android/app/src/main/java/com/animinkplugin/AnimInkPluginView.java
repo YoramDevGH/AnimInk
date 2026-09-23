@@ -4,7 +4,6 @@ import android.app.Activity;
 import android.app.AlertDialog;
 import android.content.Intent;
 import android.content.SharedPreferences;
-import android.content.res.ColorStateList;
 import android.database.Cursor;
 import android.graphics.Color;
 import android.graphics.Typeface;
@@ -14,12 +13,12 @@ import android.os.Handler;
 import android.os.Looper;
 import android.provider.OpenableColumns;
 import android.view.Gravity;
+import android.view.MotionEvent;
 import android.view.View;
 import android.view.ViewGroup;
 import android.view.WindowManager;
 import android.widget.Button;
 import android.widget.HorizontalScrollView;
-import android.widget.ImageButton;
 import android.widget.LinearLayout;
 import android.widget.PopupMenu;
 import android.widget.TextView;
@@ -49,10 +48,10 @@ public final class AnimInkPluginView extends LinearLayout implements InkCanvasVi
     private InkCanvasView canvas;
     private LinearLayout timeline;
     private TextView status;
-    private ImageButton pencilButton;
-    private ImageButton inkButton;
-    private ImageButton eraserButton;
-    private ImageButton playButton;
+    private Button pencilButton;
+    private Button inkButton;
+    private Button eraserButton;
+    private Button playButton;
     private Button sketchLayerButton;
     private Button sketchVisibilityButton;
     private Button finalLayerButton;
@@ -141,10 +140,13 @@ public final class AnimInkPluginView extends LinearLayout implements InkCanvasVi
         tools.setPadding(dp(6), dp(8), dp(6), dp(8));
         tools.setBackgroundColor(Color.rgb(55, 55, 55));
 
-        pencilButton = iconButton(R.drawable.ic_pencil, "Pencil", v -> selectTool(InkCanvasView.TOOL_PENCIL));
-        inkButton = iconButton(R.drawable.ic_ink, "Ink", v -> selectTool(InkCanvasView.TOOL_INK));
-        eraserButton = iconButton(R.drawable.ic_eraser, "Eraser", v -> selectTool(InkCanvasView.TOOL_ERASER));
-        ImageButton deleteButton = iconButton(R.drawable.ic_trash, "Delete frame", v -> deleteFrame());
+        // PluginHost loads native code from a separate NPK. Resource IDs from that
+        // package are not reliably resolved by every Chauvet build, so use text
+        // glyphs drawn by the host instead of vector drawable resources.
+        pencilButton = iconButton("P", "Pencil", v -> selectTool(InkCanvasView.TOOL_PENCIL));
+        inkButton = iconButton("I", "Ink", v -> selectTool(InkCanvasView.TOOL_INK));
+        eraserButton = iconButton("E", "Eraser", v -> selectTool(InkCanvasView.TOOL_ERASER));
+        Button deleteButton = iconButton("X", "Delete frame", v -> deleteFrame());
         tools.addView(pencilButton, toolParams());
         tools.addView(inkButton, toolParams());
         tools.addView(eraserButton, toolParams());
@@ -169,7 +171,7 @@ public final class AnimInkPluginView extends LinearLayout implements InkCanvasVi
         root.addView(workspace, new LinearLayout.LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT, 0, 1f));
 
         LinearLayout transport = row(Color.rgb(52, 52, 52));
-        playButton = iconButton(R.drawable.ic_play, "Play", v -> togglePlayback());
+        playButton = iconButton("PLAY", "Play", v -> togglePlayback());
         applyIconStyle(playButton, false, true);
         transport.addView(playButton, new LinearLayout.LayoutParams(dp(76), ViewGroup.LayoutParams.MATCH_PARENT));
 
@@ -210,12 +212,15 @@ public final class AnimInkPluginView extends LinearLayout implements InkCanvasVi
         return button;
     }
 
-    private ImageButton iconButton(int icon, String description, View.OnClickListener listener) {
-        ImageButton button = new ImageButton(getContext());
-        button.setImageResource(icon);
+    private Button iconButton(String label, String description, View.OnClickListener listener) {
+        Button button = new Button(getContext());
+        button.setText(label);
+        button.setTextSize(label.length() > 1 ? 10f : 17f);
+        button.setTypeface(Typeface.DEFAULT, Typeface.BOLD);
+        button.setAllCaps(false);
+        button.setGravity(Gravity.CENTER);
         button.setContentDescription(description);
-        button.setScaleType(ImageButton.ScaleType.CENTER_INSIDE);
-        button.setPadding(dp(14), dp(14), dp(14), dp(14));
+        button.setPadding(dp(4), 0, dp(4), 0);
         button.setOnClickListener(listener);
         button.setMinimumWidth(0);
         button.setMinimumHeight(0);
@@ -248,13 +253,13 @@ public final class AnimInkPluginView extends LinearLayout implements InkCanvasVi
         return params;
     }
 
-    private void applyIconStyle(ImageButton button, boolean selected, boolean darkBar) {
+    private void applyIconStyle(Button button, boolean selected, boolean darkBar) {
         GradientDrawable background = new GradientDrawable();
         background.setShape(GradientDrawable.OVAL);
         background.setColor(selected ? Color.BLACK : Color.WHITE);
         background.setStroke(dp(2), darkBar ? Color.WHITE : Color.DKGRAY);
         button.setBackground(background);
-        button.setImageTintList(ColorStateList.valueOf(selected ? Color.WHITE : Color.BLACK));
+        button.setTextColor(selected ? Color.WHITE : Color.BLACK);
     }
 
     private void applyFrameStyle(Button button, boolean selected) {
@@ -509,7 +514,7 @@ public final class AnimInkPluginView extends LinearLayout implements InkCanvasVi
         canvas.setPlaying(true);
         Activity activity = currentActivity();
         if (activity != null) activity.getWindow().addFlags(WindowManager.LayoutParams.FLAG_KEEP_SCREEN_ON);
-        playButton.setImageResource(R.drawable.ic_stop);
+        playButton.setText("STOP");
         playButton.setContentDescription("Stop");
         applyIconStyle(playButton, true, true);
         canvas.presentPlaybackFrame(playbackFrame);
@@ -521,7 +526,7 @@ public final class AnimInkPluginView extends LinearLayout implements InkCanvasVi
         canvas.setPlaying(false);
         Activity activity = currentActivity();
         if (activity != null) activity.getWindow().clearFlags(WindowManager.LayoutParams.FLAG_KEEP_SCREEN_ON);
-        playButton.setImageResource(R.drawable.ic_play);
+        playButton.setText("PLAY");
         playButton.setContentDescription("Play");
         applyIconStyle(playButton, false, true);
         refreshTimelineSelection();
@@ -554,11 +559,27 @@ public final class AnimInkPluginView extends LinearLayout implements InkCanvasVi
             params.rightMargin = dp(4);
             timeline.addView(frameButton, params);
         }
-        ImageButton addButton = iconButton(R.drawable.ic_add, "Add frame", v -> addBlankFrame());
+        Button addButton = iconButton("+", "Add frame", v -> addBlankFrame());
         applyIconStyle(addButton, false, true);
         timeline.addView(addButton, new LinearLayout.LayoutParams(dp(58), ViewGroup.LayoutParams.MATCH_PARENT));
         refreshTimelineSelection();
         refreshStatus();
+        timeline.requestLayout();
+        timeline.invalidate();
+    }
+
+    @Override public boolean dispatchTouchEvent(MotionEvent event) {
+        // ReactRootView may intercept a native component's gesture after DOWN.
+        // Keep the complete sequence inside AnimInk so child Buttons and the
+        // canvas receive matching DOWN/MOVE/UP events.
+        int action = event.getActionMasked();
+        if (action == MotionEvent.ACTION_DOWN && getParent() != null)
+            getParent().requestDisallowInterceptTouchEvent(true);
+        boolean handled = super.dispatchTouchEvent(event);
+        if ((action == MotionEvent.ACTION_UP || action == MotionEvent.ACTION_CANCEL)
+                && getParent() != null)
+            getParent().requestDisallowInterceptTouchEvent(false);
+        return handled;
     }
 
     private void refreshTimelineSelection() {

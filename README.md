@@ -19,11 +19,13 @@ The plugin is the recommended edition on firmware that provides **Settings → A
 
 ### Separate Chauvet 3.29.45 beta build
 
-For Manta and Nomad running **Chauvet 3.29.45_beta**, use the separate **[AnimInk 0.5.4 Chauvet preview `.snplg`](releases/AnimInk-0.5.4-Chauvet-3.29.45-beta.1.snplg?raw=1)**. It is rebuilt with `sn-plugin-lib` 0.1.65 for the permission-aware plugin runtime introduced in Chauvet 3.29.43. This preview does not replace the regular 0.5.3 packages.
+For Manta and Nomad running **Chauvet 3.29.45_beta**, use the separate **[AnimInk 0.5.4 Chauvet preview beta.2 `.snplg`](releases/AnimInk-0.5.4-Chauvet-3.29.45-beta.2.snplg?raw=1)**. It is rebuilt with `sn-plugin-lib` 0.1.65 for the permission-aware plugin runtime introduced in Chauvet 3.29.43. This preview does not replace the regular 0.5.3 packages.
 
-Preview SHA-256: [`e1c46e42768fc3197d9c121da48adb0705e3bfe1b9e96f4b8db3b20c41b2268a`](releases/AnimInk-0.5.4-Chauvet-3.29.45-beta.1.snplg.sha256)
+Beta.2 fixes PluginHost-native toolbar rendering, keeps pen-engine refreshes inside the canvas, preserves child touch sequences, and adds one-finger horizontal frame swipes.
 
-The preview declares no Chauvet file or Internet permissions. Project import and export use Android's system document picker, which grants access only to the file selected by the user; session recovery remains in the plugin's private storage. The package has passed desktop build and static checks but has not been run on physical 3.29.45 hardware yet.
+Beta.2 SHA-256: [`f5f08dadac4069623d9ec8851b7e1bf65f5bb6d57b7db1d3ecb488cef2988a5d`](releases/AnimInk-0.5.4-Chauvet-3.29.45-beta.2.snplg.sha256)
+
+The preview declares no Chauvet file or Internet permissions. Project import and export use Android's system document picker, which grants access only to the file selected by the user; session recovery remains in the plugin's private storage. The package has passed desktop build and static checks. Chauvet 3.29.45 hardware confirmation is still required for this beta.2 correction.
 
 You can also find tagged versions on the [GitHub Releases page](../../releases).
 

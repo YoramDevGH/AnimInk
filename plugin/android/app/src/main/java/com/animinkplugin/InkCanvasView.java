@@ -81,6 +81,7 @@ final class InkCanvasView extends View {
     private boolean lassoSelecting;
     private int lassoPointCount;
     private int gestureFingerCount;
+    private boolean singleFingerGesture;
     private float gestureStartX;
     private float gestureStartY;
     private float gestureCurrentX;
@@ -283,8 +284,21 @@ final class InkCanvasView extends View {
         if (playing || project == null || project.frames.isEmpty() || page.width() <= 0f) return false;
         int action = event.getActionMasked();
 
+        if (action == MotionEvent.ACTION_DOWN
+                && event.getToolType(0) == MotionEvent.TOOL_TYPE_FINGER) {
+            singleFingerGesture = true;
+            gestureStartX = event.getX();
+            gestureStartY = event.getY();
+            gestureCurrentX = gestureStartX;
+            gestureCurrentY = gestureStartY;
+            gestureStartTime = event.getEventTime();
+            getParent().requestDisallowInterceptTouchEvent(true);
+            return true;
+        }
+
         if (action == MotionEvent.ACTION_POINTER_DOWN && (event.getPointerCount() == 2
                 || event.getPointerCount() == 3) && allPointersAreFingers(event)) {
+            singleFingerGesture = false;
             startOrExtendFingerGesture(event);
             return true;
         }
@@ -303,6 +317,19 @@ final class InkCanvasView extends View {
             }
             if (action == MotionEvent.ACTION_UP || action == MotionEvent.ACTION_CANCEL) {
                 finishFingerGesture();
+                return true;
+            }
+            return true;
+        }
+
+        if (singleFingerGesture) {
+            if (action == MotionEvent.ACTION_MOVE) {
+                gestureCurrentX = event.getX();
+                gestureCurrentY = event.getY();
+                return true;
+            }
+            if (action == MotionEvent.ACTION_UP || action == MotionEvent.ACTION_CANCEL) {
+                finishSingleFingerGesture(action == MotionEvent.ACTION_UP);
                 return true;
             }
             return true;
@@ -780,6 +807,17 @@ final class InkCanvasView extends View {
                 && Math.abs(dx) > Math.abs(dy) && listener != null) {
             listener.onFrameSwipe(dx < 0f ? 1 : -1);
         }
+    }
+
+    private void finishSingleFingerGesture(boolean completed) {
+        float dx = gestureCurrentX - gestureStartX;
+        float dy = gestureCurrentY - gestureStartY;
+        singleFingerGesture = false;
+        if (getParent() != null) getParent().requestDisallowInterceptTouchEvent(false);
+        float density = getResources().getDisplayMetrics().density;
+        if (completed && Math.abs(dx) >= density * 56f
+                && Math.abs(dx) > Math.abs(dy) && listener != null)
+            listener.onFrameSwipe(dx < 0f ? 1 : -1);
     }
 
     private boolean allPointersAreFingers(MotionEvent event) {

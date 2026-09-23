@@ -26,6 +26,7 @@ final class SupernotePenEngine {
     private final Object drawEventProxy;
     private final Object pendingLock = new Object();
     private Rect pendingDirtyRect;
+    private Rect writableRect;
     private int pendingCallbacks;
 
     static SupernotePenEngine create(View host, Listener listener) {
@@ -123,6 +124,7 @@ final class SupernotePenEngine {
     }
 
     void setWritableRect(Rect rect) {
+        writableRect = rect == null ? null : new Rect(rect);
         try {
             invoke("rmAllWritableRects", new Class<?>[0]);
             invoke("addWritableRects", new Class<?>[]{java.util.List.class},
@@ -132,16 +134,18 @@ final class SupernotePenEngine {
 
     void loadBitmap(Bitmap bitmap) {
         try {
-            // A silent clear only repaints the host View. On Chauvet 3.24 the
-            // PW backing bitmap can then retain pixels from the previous frame;
-            // its first dirty update exposes those pixels around the new stroke.
-            // Clear and present the whole native surface before installing the
-            // next frame so both the visible e-ink page and PW's cache agree.
-            invoke("clearContent", new Class<?>[]{Rect.class, boolean.class, boolean.class},
-                    null, true, true);
+            // Never clear with a null rectangle inside PluginHost: on Chauvet it
+            // can target the whole plugin surface and erase sibling controls.
+            // Limit the native refresh to the canvas page so toolbar and timeline
+            // remain visible and keep their normal Android touch feedback.
+            Rect target = writableRect == null ? null : new Rect(writableRect);
+            if (target != null)
+                invoke("clearContent", new Class<?>[]{Rect.class, boolean.class, boolean.class},
+                        target, true, true);
             invoke("setPWBitmap", new Class<?>[]{Bitmap.class, Rect.class, Rect.class, boolean.class},
                     bitmap, null, null, true);
-            invoke("invalidateHost", new Class<?>[]{Rect.class}, (Object) null);
+            if (target == null) host.invalidate();
+            else invoke("invalidateHost", new Class<?>[]{Rect.class}, target);
         } catch (ReflectiveOperationException ignored) {
             if (!bitmap.isRecycled()) bitmap.recycle();
         }
